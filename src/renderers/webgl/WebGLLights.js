@@ -37,7 +37,8 @@ function UniformsCache() {
 						distance: 0,
 						coneCos: 0,
 						penumbraCos: 0,
-						decay: 0
+						decay: 0,
+						projector: false
 					};
 					break;
 
@@ -297,8 +298,10 @@ function WebGLLights( extensions ) {
 				uniforms.distance = distance;
 
 				uniforms.coneCos = Math.cos( light.angle );
-				uniforms.penumbraCos = Math.cos( light.angle * ( 1 - light.penumbra ) );
+				// uniforms.penumbraCos = Math.cos( light.angle * ( 1 - light.penumbra ) );
+				uniforms.penumbraCos = Math.cos( light.angle * ( light.projector ? light.penumbra : 1 - ( light.penumbra ) ) );
 				uniforms.decay = light.decay;
+				uniforms.projector = light.projector;
 
 				state.spot[ spotLength ] = uniforms;
 

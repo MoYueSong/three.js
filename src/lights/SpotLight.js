@@ -122,6 +122,9 @@ class SpotLight extends Light {
 		 */
 		this.shadow = new SpotLightShadow();
 
+		this.projector = false;
+		this.projectorAspect = 1;
+
 	}
 
 	/**

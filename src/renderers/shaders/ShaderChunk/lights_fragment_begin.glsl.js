@@ -94,7 +94,7 @@ IncidentLight directLight;
 
 		spotLight = spotLights[ i ];
 
-		getSpotLightInfo( spotLight, geometryPosition, directLight );
+		// getSpotLightInfo( spotLight, geometryPosition, directLight );
 
 		// spot lights are ordered [shadows with maps, shadows without maps, maps without shadows, none]
 		#if ( UNROLLED_LOOP_INDEX < NUM_SPOT_LIGHT_SHADOWS_WITH_MAPS )
@@ -103,6 +103,12 @@ IncidentLight directLight;
 		#define SPOT_LIGHT_MAP_INDEX NUM_SPOT_LIGHT_MAPS
 		#else
 		#define SPOT_LIGHT_MAP_INDEX ( UNROLLED_LOOP_INDEX - NUM_SPOT_LIGHT_SHADOWS + NUM_SPOT_LIGHT_SHADOWS_WITH_MAPS )
+		#endif
+
+		#if ( SPOT_LIGHT_MAP_INDEX < NUM_SPOT_LIGHT_MAPS )
+			getSpotLightInfo( spotLight, geometryPosition, vSpotLightCoord[ i ], directLight );
+		#else 
+			getSpotLightInfo( spotLight, geometryPosition, vec4(0.0), directLight );
 		#endif
 
 		#if ( SPOT_LIGHT_MAP_INDEX < NUM_SPOT_LIGHT_MAPS )

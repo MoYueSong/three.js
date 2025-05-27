@@ -135,12 +135,19 @@ float getSpotAttenuation( const in float coneCosine, const in float penumbraCosi
 		float decay;
 		float coneCos;
 		float penumbraCos;
+		bool projector;
 	};
 
 	uniform SpotLight spotLights[ NUM_SPOT_LIGHTS ];
 
+	float sdBox( in vec2 p, in vec2 b )
+	{
+		vec2 d = abs(p)-b;
+		return length(max(d,0.0)) + min(max(d.x,d.y),0.0);
+	}
+
 	// light is an out parameter as having it as a return value caused compiler errors on some devices
-	void getSpotLightInfo( const in SpotLight spotLight, const in vec3 geometryPosition, out IncidentLight light ) {
+	void getSpotLightInfo( const in SpotLight spotLight, const in vec3 geometryPosition, const in vec4 spotCoord, out IncidentLight light ) {
 
 		vec3 lVector = spotLight.position - geometryPosition;
 
@@ -150,6 +157,11 @@ float getSpotAttenuation( const in float coneCosine, const in float penumbraCosi
 
 		float spotAttenuation = getSpotAttenuation( spotLight.coneCos, spotLight.penumbraCos, angleCos );
 
+		if (spotLight.projector) {
+			vec3 spotLightCoord = spotCoord.xyz / spotCoord.w;
+			spotAttenuation = clamp((-2.0 * sdBox(spotLightCoord.xy - vec2(0.5), vec2(0.5, 0.5))) * (-1.0 / ((1.0 - acos(spotLight.penumbraCos)) - 1.0)), 0.0, 1.0);
+		}
+			
 		if ( spotAttenuation > 0.0 ) {
 
 			float lightDistance = length( lVector );
